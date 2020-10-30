@@ -5,6 +5,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.locks.ReentrantLock;
 
 public class Supermarket {
 
@@ -12,6 +13,7 @@ public class Supermarket {
     private final boolean[] availables; // Array que contiene la disponibilidad de cada caja
     private final DateTimeFormatter f = DateTimeFormatter.ofPattern("HH:mm:ss");
     private final Semaphore semaphore;
+    private final ReentrantLock lock = new ReentrantLock(true);
 
     /* Constructor */
     public Supermarket(int max_cash_register) {
@@ -53,13 +55,18 @@ public class Supermarket {
     }
 
     private int selectCashRegister() {
-        for (int i = 0; i < MAX_CASH_REGISTER; i++) { // Se recoge las cajas para saber si hay alguna libre
-            if(availables[i]){
-                availables[i] = false;
-                return i; // La primera que esté libre se selecciona
+        lock.lock(); // Se bloquea
+        try {
+            for (int i = 0; i < MAX_CASH_REGISTER; i++) { // Se recoge las cajas para saber si hay alguna libre
+                if(availables[i]){
+                    availables[i] = false;
+                    return i; // La primera que esté libre se selecciona
+                }
             }
+            return -1; // Si no hay ninguna libre, devuelve -1
+        } finally {
+            lock.unlock(); // Se desbloquea
         }
-        return -1; // Si no hay ninguna libre, devuelve -1
     }
 
 
