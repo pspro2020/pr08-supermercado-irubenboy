@@ -1,9 +1,15 @@
 package classes;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.concurrent.ThreadLocalRandom;
+import java.util.concurrent.TimeUnit;
+
 public class Supermarket {
 
     private final int MAX_CASH_REGISTER; // Número máximo de cajas que tiene el supermercado
     private final boolean[] availables; // Array que contiene la disponibilidad de cada caja
+    DateTimeFormatter f = DateTimeFormatter.ofPattern("HH:mm:ss");
 
     /* Constructor */
     public Supermarket(int max_cash_register) {
@@ -15,24 +21,28 @@ public class Supermarket {
     }
 
     //Está función controla cuando un cliente quiere entrar a una caja
-    public void goIn(){
-        System.out.printf("%s wants to go in a cash register", Thread.currentThread().getName()); // Se muestra el mensaje
+    public void goIn() throws InterruptedException {
+        System.out.printf("%s => %s wants to go in a cash register\n", LocalDateTime.now().format(f),
+                Thread.currentThread().getName()); // Se muestra el mensaje
 
         // Se selecciona una caja registradora
         int cashRegister = selectCashRegister();
         if(cashRegister > 0){ // Si se ha seleccionada una caja registradora
-            buy(cashRegister); // Comprar en dicha caja registradora
+            purchaseInTheCash(cashRegister); // Comprar en dicha caja registradora
             goOut(cashRegister); // Abandona la caja registradora
         }
 
     }
 
     private void goOut(int cashRegister) {
-        System.out.printf("%s go out and have abandoned the cash registrator #%d", Thread.currentThread().getName(), cashRegister+1);
+        System.out.printf("%s => %s go out and have abandoned the cash registrator #%d\n",
+                LocalDateTime.now().format(f), Thread.currentThread().getName(), cashRegister+1);
     }
 
-    private void buy(int cashRegister) {
-        System.out.printf("%s is buying in the cash register #%d", Thread.currentThread().getName(), cashRegister+1);
+    private void purchaseInTheCash(int cashRegister) throws InterruptedException {
+        System.out.printf("%s => %s is buying in the cash register #%d\n",
+                LocalDateTime.now().format(f), Thread.currentThread().getName(), cashRegister+1);
+        TimeUnit.SECONDS.sleep(ThreadLocalRandom.current().nextInt(4)+1);
     }
 
     private int selectCashRegister() {
