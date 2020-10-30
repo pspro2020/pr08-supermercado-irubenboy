@@ -21,7 +21,7 @@ public class Supermarket {
     }
 
     //Está función controla cuando un cliente quiere entrar a una caja
-    public void goIn() throws InterruptedException {
+    public void buy() throws InterruptedException {
         System.out.printf("%s => %s wants to go in a cash register\n", LocalDateTime.now().format(f),
                 Thread.currentThread().getName()); // Se muestra el mensaje
 
