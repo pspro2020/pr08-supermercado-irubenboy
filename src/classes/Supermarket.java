@@ -2,6 +2,7 @@ package classes;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.concurrent.Semaphore;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.TimeUnit;
 
@@ -10,11 +11,13 @@ public class Supermarket {
     private final int MAX_CASH_REGISTER; // Número máximo de cajas que tiene el supermercado
     private final boolean[] availables; // Array que contiene la disponibilidad de cada caja
     private final DateTimeFormatter f = DateTimeFormatter.ofPattern("HH:mm:ss");
+    private final Semaphore semaphore;
 
     /* Constructor */
     public Supermarket(int max_cash_register) {
         this.MAX_CASH_REGISTER = max_cash_register;
         availables = new boolean[MAX_CASH_REGISTER];
+        semaphore = new Semaphore(MAX_CASH_REGISTER, true);
         for (int i = 0; i < MAX_CASH_REGISTER; i++) {
             availables[i] = true; // Al crearse, todas las cajas están disponibles
         }
@@ -24,12 +27,16 @@ public class Supermarket {
     public void buy() throws InterruptedException {
         System.out.printf("%s => %s wants to go in a cash register\n", LocalDateTime.now().format(f),
                 Thread.currentThread().getName()); // Se muestra el mensaje
-
-        // Se selecciona una caja registradora
-        int cashRegister = selectCashRegister();
-        if(cashRegister > 0){ // Si se ha seleccionada una caja registradora
-            purchaseInTheCash(cashRegister); // Comprar en dicha caja registradora
-            goOut(cashRegister); // Abandona la caja registradora
+        semaphore.acquire();
+        try {
+            // Se selecciona una caja registradora
+            int cashRegister = selectCashRegister();
+            if(cashRegister > 0){ // Si se ha seleccionada una caja registradora
+                purchaseInTheCash(cashRegister); // Comprar en dicha caja registradora
+                goOut(cashRegister); // Abandona la caja registradora
+            }
+        } finally {
+            semaphore.release(); // Suelta el semaforo
         }
 
     }
