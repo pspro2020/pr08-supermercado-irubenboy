@@ -9,7 +9,7 @@ public class Supermarket {
 
     private final int MAX_CASH_REGISTER; // Número máximo de cajas que tiene el supermercado
     private final boolean[] availables; // Array que contiene la disponibilidad de cada caja
-    DateTimeFormatter f = DateTimeFormatter.ofPattern("HH:mm:ss");
+    private final DateTimeFormatter f = DateTimeFormatter.ofPattern("HH:mm:ss");
 
     /* Constructor */
     public Supermarket(int max_cash_register) {
