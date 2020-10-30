@@ -7,7 +7,7 @@ public class Main {
     public static void main(String[] args) {
         Supermarket ruizGalan = new Supermarket(4);
         for (int i = 0; i < MAX_CLIENTS; i++) {
-            new Thread(new Client(ruizGalan), "Client-" + i);
+            new Thread(new Client(ruizGalan), "Client-" + i).start();
         }
     }
 }
